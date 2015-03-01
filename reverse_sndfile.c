@@ -5,7 +5,7 @@
 #include "dbg.h"
 #include "reverse_sndfile.h"
 
-int copy_up_to_char_or_max(char *dest, const char *input, const char upto, const int max)
+void copy_up_to_char_or_max(char *dest, const char *input, const char upto, const int max)
 {
   int i = 0;
   char current_char = input[i];
@@ -18,8 +18,6 @@ int copy_up_to_char_or_max(char *dest, const char *input, const char upto, const
   }
 
   dest[i] = '\0';
-
-  return 1;
 }
 
 void resolve_filename_extension(char** format_extension, const SF_INFO sf_info)
@@ -89,11 +87,10 @@ int main(int argc, char *argv[])
 
   // iterate backwards through inputfile, writing forwards into outputfile
 
-  float *copy_array;
   sf_count_t inputfile_offset_from_end = -1;
   sf_count_t outputfile_offset = 0;
 
-  copy_array = (float *)calloc(inputfile_info.channels, sizeof(double));
+  float *copy_array = (float *)calloc(inputfile_info.channels, sizeof(double));
 
   while (outputfile_offset <= inputfile_info.frames) {
     sf_seek(inputfile, inputfile_offset_from_end--, SEEK_END);
