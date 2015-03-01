@@ -39,13 +39,7 @@ SF_INFO* create_output_file_info(const SF_INFO inputfile_info)
 {
   SF_INFO *reversed_file_info;
   reversed_file_info = (SF_INFO *)malloc(sizeof(SF_INFO));
-
-  reversed_file_info->frames = inputfile_info.frames;
-  reversed_file_info->samplerate = inputfile_info.samplerate;
-  reversed_file_info->channels = inputfile_info.channels;
-  reversed_file_info->format = inputfile_info.format;
-  reversed_file_info->sections = inputfile_info.sections;
-  reversed_file_info->seekable = inputfile_info.seekable;
+  memcpy(reversed_file_info, &inputfile_info, sizeof(SF_INFO));
 
   return reversed_file_info;
 }
