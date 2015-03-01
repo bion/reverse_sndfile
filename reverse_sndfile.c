@@ -35,13 +35,31 @@ void resolve_filename_extension(char** format_name, const SF_INFO sf_info)
   strcpy(*format_name, format_extensions[i]);
 }
 
+SF_INFO* create_output_file_info(const SF_INFO inputfile_info)
+{
+  SF_INFO *reversed_file_info;
+  reversed_file_info = (SF_INFO *)malloc(sizeof(SF_INFO));
+
+  reversed_file_info->frames = inputfile_info.frames;
+  reversed_file_info->samplerate = inputfile_info.samplerate;
+  reversed_file_info->channels = inputfile_info.channels;
+  reversed_file_info->format = inputfile_info.format;
+  reversed_file_info->sections = inputfile_info.sections;
+  reversed_file_info->seekable = inputfile_info.seekable;
+
+  return reversed_file_info;
+}
+
 int main(int argc, char *argv[])
 {
   char *filename;
   char *reversed_filename;
   char *format_name;
   SNDFILE *inputfile;
+  SNDFILE *outputfile;
   SF_INFO inputfile_info;
+  SF_INFO outputfile_info;
+
 
   if (argc != 2) {
     printf("usage: reverse_sndfile FILENAME\n");
@@ -69,7 +87,32 @@ int main(int argc, char *argv[])
   strcat(reversed_filename, format_name);
   printf("writing output file to: %s\n", reversed_filename);
 
+  // open outputfile
+
+  outputfile_info = *create_output_file_info(inputfile_info);
+  outputfile = sf_open(reversed_filename, SFM_WRITE, &outputfile_info);
+  check(outputfile != NULL, "unable to open file");
+
+  // iterate backwards through inputfile, writing forwards into outputfile
+
+  float *copy_array;
+  sf_count_t inputfile_offset_from_end = -1;
+  sf_count_t outputfile_offset = 0;
+
+  copy_array = (float *)calloc(inputfile_info.channels, sizeof(double));
+
+  while (outputfile_offset <= inputfile_info.frames) {
+    sf_seek(inputfile, inputfile_offset_from_end--, SEEK_END);
+    sf_read_float(inputfile, copy_array, 1);
+
+    sf_seek(outputfile, outputfile_offset++, SEEK_SET);
+    sf_write_float(outputfile, copy_array, 1);
+  }
+
+  // tidy up
+
   sf_close(inputfile);
+  sf_close(outputfile);
   return 0;
 
  error:
