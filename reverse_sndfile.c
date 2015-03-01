@@ -3,8 +3,9 @@
 #include <sndfile.h>
 #include <string.h>
 #include "dbg.h"
+#include "reverse_sndfile.h"
 
-int copy_up_to_char_or_max(char *dest, const char *input, char upto, int max)
+int copy_up_to_char_or_max(char *dest, const char *input, const char upto, const int max)
 {
   int i = 0;
   char current_char = input[i];
@@ -34,8 +35,12 @@ int main(int argc, char *argv[])
 
   filename = argv[1];
 
-  reversed_filename = (char *)calloc(256, sizeof(char));
-  copy_up_to_char_or_max(reversed_filename, filename, '.', strnlen(filename, 256));
+  reversed_filename = (char *)calloc(MAX_FILENAME_LEN, sizeof(char));
+  copy_up_to_char_or_max(reversed_filename,
+                         filename,
+                         '.',
+                         strnlen(filename, MAX_FILENAME_LEN));
+
   strcat(reversed_filename, "_reversed");
 
   inputfile = sf_open(filename, SFM_READ, &inputfile_info);
