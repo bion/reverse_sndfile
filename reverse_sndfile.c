@@ -10,8 +10,11 @@ int copy_up_to_char_or_max(char *dest, const char *input, const char upto, const
   int i = 0;
   char current_char = input[i];
 
-  while ((i++ < max) && (current_char = input[i] != '\0') && (current_char != upto)) {
+
+  while (i < max && current_char != '\0' && current_char != upto) {
     dest[i] = current_char;
+    i++;
+    current_char = input[i];
   }
 
   dest[i] = '\0';
