@@ -57,22 +57,22 @@ int main(int argc, char *argv[])
 
   // format output filename
 
-    reversed_filename = (char *)calloc(MAX_FILENAME_LEN, sizeof(char));
-    copy_up_to_char_or_max(reversed_filename,
-                           filename,
-                           '.',
-                           strnlen(filename, MAX_FILENAME_LEN));
+  reversed_filename = (char *)calloc(MAX_FILENAME_LEN, sizeof(char));
+  copy_up_to_char_or_max(reversed_filename,
+                         filename,
+                         '.',
+                         strnlen(filename, MAX_FILENAME_LEN));
 
-    strcat(reversed_filename, "_reversed");
-    format_name = (char *)calloc(5, sizeof(char));
-    resolve_file_extension_name(&format_name, inputfile_info);
-    strcat(reversed_filename, format_name);
-    printf("writing output file to: %s\n", reversed_filename);
+  strcat(reversed_filename, "_reversed");
+  format_name = (char *)calloc(5, sizeof(char));
+  resolve_file_extension_name(&format_name, inputfile_info);
+  strcat(reversed_filename, format_name);
+  printf("writing output file to: %s\n", reversed_filename);
 
-    sf_close(inputfile);
-    return 0;
+  sf_close(inputfile);
+  return 0;
 
  error:
-    sf_close(inputfile);
-    return 1;
+  sf_close(inputfile);
+  return 1;
 }
