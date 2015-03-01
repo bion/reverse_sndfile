@@ -60,7 +60,6 @@ int main(int argc, char *argv[])
   SF_INFO inputfile_info;
   SF_INFO outputfile_info;
 
-
   if (argc != 2) {
     printf("usage: reverse_sndfile FILENAME\n");
     return 0;
