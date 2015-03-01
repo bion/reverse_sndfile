@@ -19,7 +19,7 @@ int copy_up_to_char_or_max(char *dest, const char *input, const char upto, const
   return 1;
 }
 
-void resolve_filename_extension(char** format_name, const SF_INFO sf_info)
+void resolve_filename_extension(char** format_extension, const SF_INFO sf_info)
 {
   int format_masks[] = {SF_FORMAT_AIFF, SF_FORMAT_WAV, SF_FORMAT_FLAC, SF_FORMAT_OGG};
   char *format_extensions[] = {".aiff", ".wav", ".flac", ".ogg"};
@@ -30,7 +30,7 @@ void resolve_filename_extension(char** format_name, const SF_INFO sf_info)
     i++;
   }
 
-  strcpy(*format_name, format_extensions[i]);
+  strcpy(*format_extension, format_extensions[i]);
 }
 
 SF_INFO* create_output_file_info(const SF_INFO inputfile_info)
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 {
   char *filename;
   char *reversed_filename;
-  char *format_name;
+  char *format_extension;
   SNDFILE *inputfile;
   SNDFILE *outputfile;
   SF_INFO inputfile_info;
@@ -73,9 +73,9 @@ int main(int argc, char *argv[])
                          strnlen(filename, MAX_FILENAME_LEN));
 
   strcat(reversed_filename, "_reversed");
-  format_name = (char *)calloc(5, sizeof(char));
-  resolve_filename_extension(&format_name, inputfile_info);
-  strcat(reversed_filename, format_name);
+  format_extension = (char *)calloc(5, sizeof(char));
+  resolve_filename_extension(&format_extension, inputfile_info);
+  strcat(reversed_filename, format_extension);
   printf("writing output file to: %s\n", reversed_filename);
 
   // open outputfile
