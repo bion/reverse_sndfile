@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
   format_extension = calloc(5, sizeof(char));
   resolve_filename_extension(&format_extension, inputfile_info);
   strcat(reversed_filename, format_extension);
+
   printf("writing output file to: %s\n", reversed_filename);
 
   // open outputfile
@@ -89,9 +90,9 @@ int main(int argc, char *argv[])
   sf_count_t inputfile_offset_from_end = -1;
   sf_count_t outputfile_offset = 0;
 
-  float *copy_array = calloc(inputfile_info.channels, sizeof(float));
+  float *copy_array = calloc(outputfile_info.channels, sizeof(float));
 
-  while (outputfile_offset <= inputfile_info.frames) {
+  while (outputfile_offset <= outputfile_info.frames) {
     sf_seek(inputfile, inputfile_offset_from_end--, SEEK_END);
     sf_read_float(inputfile, copy_array, 1);
 
@@ -100,6 +101,11 @@ int main(int argc, char *argv[])
   }
 
   // tidy up
+
+  free(format_extension);
+  free(reversed_filename);
+  free(copy_array);
+  free(outputfile_info);
 
   sf_close(inputfile);
   sf_close(outputfile);
