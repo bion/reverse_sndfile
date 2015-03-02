@@ -10,7 +10,6 @@ void copy_up_to_char_or_max(char *dest, const char *input, const char upto, cons
   int i = 0;
   char current_char = input[i];
 
-
   while (i < max && current_char != '\0' && current_char != upto) {
     dest[i] = current_char;
     i++;
@@ -73,7 +72,7 @@ int main(int argc, char *argv[])
                          strnlen(filename, MAX_FILENAME_LEN));
 
   strcat(reversed_filename, "_reversed");
-  format_extension = calloc(5, sizeof(char));
+  format_extension = calloc(10, sizeof(char));
   resolve_filename_extension(&format_extension, inputfile_info);
   strcat(reversed_filename, format_extension);
 
