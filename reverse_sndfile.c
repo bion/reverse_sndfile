@@ -36,8 +36,7 @@ void resolve_filename_extension(char** format_extension, const SF_INFO sf_info)
 
 SF_INFO* create_output_file_info(const SF_INFO inputfile_info)
 {
-  SF_INFO *reversed_file_info;
-  reversed_file_info = (SF_INFO *)malloc(sizeof(SF_INFO));
+  SF_INFO *reversed_file_info = malloc(sizeof(SF_INFO));;
   memcpy(reversed_file_info, &inputfile_info, sizeof(SF_INFO));
 
   return reversed_file_info;
@@ -67,14 +66,14 @@ int main(int argc, char *argv[])
 
   // format output filename
 
-  reversed_filename = (char *)calloc(MAX_FILENAME_LEN, sizeof(char));
+  reversed_filename = calloc(MAX_FILENAME_LEN, sizeof(char));
   copy_up_to_char_or_max(reversed_filename,
                          filename,
                          '.',
                          strnlen(filename, MAX_FILENAME_LEN));
 
   strcat(reversed_filename, "_reversed");
-  format_extension = (char *)calloc(5, sizeof(char));
+  format_extension = calloc(5, sizeof(char));
   resolve_filename_extension(&format_extension, inputfile_info);
   strcat(reversed_filename, format_extension);
   printf("writing output file to: %s\n", reversed_filename);
@@ -90,7 +89,7 @@ int main(int argc, char *argv[])
   sf_count_t inputfile_offset_from_end = -1;
   sf_count_t outputfile_offset = 0;
 
-  float *copy_array = (float *)calloc(inputfile_info.channels, sizeof(double));
+  float *copy_array = calloc(inputfile_info.channels, sizeof(float));
 
   while (outputfile_offset <= inputfile_info.frames) {
     sf_seek(inputfile, inputfile_offset_from_end--, SEEK_END);
