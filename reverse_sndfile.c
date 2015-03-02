@@ -24,7 +24,7 @@ void resolve_filename_extension(char** format_extension, const SF_INFO sf_info)
 {
   int format_masks[] = {SF_FORMAT_AIFF, SF_FORMAT_WAV, SF_FORMAT_FLAC, SF_FORMAT_OGG};
   char *format_extensions[] = {".aiff", ".wav", ".flac", ".ogg"};
-  int i;
+  int i = 0;
 
   while (i < 4) {
     if (sf_info.format & format_masks[i]) break;
