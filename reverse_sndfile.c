@@ -36,7 +36,7 @@ SF_INFO* create_output_file_info(const SF_INFO inputfile_info)
 {
   SF_INFO *reversed_file_info = malloc(sizeof(SF_INFO));
   if (reversed_file_info == NULL) {
-    fprintf(stderr, "memory allocation failed");
+    fprintf(stderr, "memory allocation failed\n");
     exit(1);
   }
 
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   // format output filename
 
   if ((reversed_filename = malloc(MAX_FILENAME_LEN * sizeof(char))) == NULL) {
-    fprintf(stderr, "memory allocation failed");
+    fprintf(stderr, "memory allocation failed\n");
     goto error;
   }
 
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
   strncat(reversed_filename, "_reversed", sizeof(char) * 9);
 
   if ((format_extension = malloc(10 * sizeof(char))) == NULL) {
-    fprintf(stderr, "memory allocation failed");
+    fprintf(stderr, "memory allocation failed\n");
     goto error;
   }
 
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
   float *copy_array;
 
   if ((copy_array = malloc(inputfile_info.channels * sizeof(float))) == NULL) {
-    fprintf(stderr, "memory allocation failed");
+    fprintf(stderr, "memory allocation failed\n");
     goto error;
   }
 
