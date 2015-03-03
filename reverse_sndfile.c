@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <sndfile.h>
 #include <string.h>
-#include "dbg.h"
 #include "reverse_sndfile.h"
 
 void copy_up_to_char_or_max(char *dest, const char *input, const char upto, const int max)
@@ -63,10 +62,12 @@ int main(int argc, char *argv[])
 
   filename = argv[1];
 
-  // open file
+  // open input file
 
-  inputfile = sf_open(filename, SFM_READ, &inputfile_info);
-  check(inputfile != NULL, "unable to open file");
+  if ((inputfile = sf_open(filename, SFM_READ, &inputfile_info)) == NULL) {
+    printf("unable to open input file\n");
+    return 1;
+  };
 
   // format output filename
 
@@ -94,8 +95,10 @@ int main(int argc, char *argv[])
   // open outputfile
 
   outputfile_info = create_output_file_info(inputfile_info);
-  outputfile = sf_open(reversed_filename, SFM_WRITE, outputfile_info);
-  check(outputfile != NULL, "unable to open file");
+  if ((outputfile = sf_open(reversed_filename, SFM_WRITE, outputfile_info)) == NULL) {
+    fprintf(stderr, "unable to open output file\n");
+    goto error;
+  }
 
   // iterate backwards through inputfile, writing forwards into outputfile
 
