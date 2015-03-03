@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 
   // format output filename
 
-  if ((reversed_filename = calloc(MAX_FILENAME_LEN, sizeof(char))) == NULL) {
+  if ((reversed_filename = malloc(MAX_FILENAME_LEN * sizeof(char))) == NULL) {
     fprintf(stderr, "memory allocation failed");
     goto error;
   }
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 
   strncat(reversed_filename, "_reversed", sizeof(char) * 9);
 
-  if ((format_extension = calloc(10, sizeof(char))) == NULL) {
+  if ((format_extension = malloc(10 * sizeof(char))) == NULL) {
     fprintf(stderr, "memory allocation failed");
     goto error;
   }
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
   sf_count_t outputfile_offset = 0;
   float *copy_array;
 
-  if ((copy_array = calloc(inputfile_info.channels, sizeof(float))) == NULL) {
+  if ((copy_array = malloc(inputfile_info.channels * sizeof(float))) == NULL) {
     fprintf(stderr, "memory allocation failed");
     goto error;
   }
