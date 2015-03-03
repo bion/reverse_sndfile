@@ -35,7 +35,12 @@ void resolve_filename_extension(char** format_extension, const SF_INFO sf_info)
 
 SF_INFO* create_output_file_info(const SF_INFO inputfile_info)
 {
-  SF_INFO *reversed_file_info = malloc(sizeof(SF_INFO));;
+  SF_INFO *reversed_file_info = malloc(sizeof(SF_INFO));
+  if (reversed_file_info == NULL) {
+    fprintf(stderr, "memory allocation failed");
+    exit(1);
+  }
+
   memcpy(reversed_file_info, &inputfile_info, sizeof(SF_INFO));
 
   return reversed_file_info;
@@ -65,14 +70,22 @@ int main(int argc, char *argv[])
 
   // format output filename
 
-  reversed_filename = calloc(MAX_FILENAME_LEN, sizeof(char));
+  if ((reversed_filename = calloc(MAX_FILENAME_LEN, sizeof(char))) == NULL) {
+    fprintf(stderr, "memory allocation failed");
+    goto error;
+  }
+
   copy_up_to_char_or_max(reversed_filename,
                          filename,
                          '.',
                          strnlen(filename, MAX_FILENAME_LEN));
 
   strcat(reversed_filename, "_reversed");
-  format_extension = calloc(10, sizeof(char));
+  if ((format_extension = calloc(10, sizeof(char))) == NULL) {
+    fprintf(stderr, "memory allocation failed");
+    goto error;
+  }
+
   resolve_filename_extension(&format_extension, inputfile_info);
   strcat(reversed_filename, format_extension);
 
@@ -88,8 +101,12 @@ int main(int argc, char *argv[])
 
   sf_count_t inputfile_offset_from_end = -1;
   sf_count_t outputfile_offset = 0;
+  float *copy_array;
 
-  float *copy_array = calloc(outputfile_info.channels, sizeof(float));
+  if ((copy_array = calloc(inputfile_info.channels, sizeof(float))) == NULL) {
+    fprintf(stderr, "memory allocation failed");
+    goto error;
+  }
 
   while (outputfile_offset <= outputfile_info.frames) {
     sf_seek(inputfile, inputfile_offset_from_end--, SEEK_END);
