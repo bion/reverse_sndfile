@@ -29,7 +29,7 @@ void resolve_filename_extension(char** format_extension, const SF_INFO sf_info)
     i++;
   }
 
-  strcpy(*format_extension, format_extensions[i]);
+  strncpy(*format_extension, format_extensions[i], sizeof(char) * 5);
 }
 
 SF_INFO* create_output_file_info(const SF_INFO inputfile_info)
@@ -81,14 +81,15 @@ int main(int argc, char *argv[])
                          '.',
                          strnlen(filename, MAX_FILENAME_LEN));
 
-  strcat(reversed_filename, "_reversed");
+  strncat(reversed_filename, "_reversed", sizeof(char) * 9);
+
   if ((format_extension = calloc(10, sizeof(char))) == NULL) {
     fprintf(stderr, "memory allocation failed");
     goto error;
   }
 
   resolve_filename_extension(&format_extension, inputfile_info);
-  strcat(reversed_filename, format_extension);
+  strncat(reversed_filename, format_extension, sizeof(char) * 10);
 
   printf("writing output file to: %s\n", reversed_filename);
 
