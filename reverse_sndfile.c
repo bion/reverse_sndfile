@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
   SNDFILE *inputfile;
   SNDFILE *outputfile;
   SF_INFO inputfile_info;
-  SF_INFO outputfile_info;
+  SF_INFO *outputfile_info;
 
   if (argc != 2) {
     printf("usage: reverse_sndfile FILENAME\n");
@@ -93,8 +93,8 @@ int main(int argc, char *argv[])
 
   // open outputfile
 
-  outputfile_info = *create_output_file_info(inputfile_info);
-  outputfile = sf_open(reversed_filename, SFM_WRITE, &outputfile_info);
+  outputfile_info = create_output_file_info(inputfile_info);
+  outputfile = sf_open(reversed_filename, SFM_WRITE, outputfile_info);
   check(outputfile != NULL, "unable to open file");
 
   // iterate backwards through inputfile, writing forwards into outputfile
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
     goto error;
   }
 
-  while (outputfile_offset <= outputfile_info.frames) {
+  while (outputfile_offset <= inputfile_info.frames) {
     sf_seek(inputfile, inputfile_offset_from_end--, SEEK_END);
     sf_read_float(inputfile, copy_array, 1);
 
@@ -129,5 +129,6 @@ int main(int argc, char *argv[])
 
  error:
   sf_close(inputfile);
+  sf_close(outputfile);
   return 1;
 }
