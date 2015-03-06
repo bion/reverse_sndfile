@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sndfile.h>
 #include <string.h>
+#include <pthread.h>
 #include "reverse_sndfile.h"
 
 void copy_up_to_char_or_max(char *dest, const char *input, const char upto, const int max)
@@ -43,6 +44,33 @@ SF_INFO* create_output_file_info(const SF_INFO inputfile_info)
   memcpy(reversed_file_info, &inputfile_info, sizeof(SF_INFO));
 
   return reversed_file_info;
+}
+
+int copy_samples_in_reverse(SNDFILE *inputfile, SNDFILE *outputfile, SF_INFO *file_info)
+{
+  // iterate backwards through inputfile, writing forwards into outputfile
+
+  sf_count_t inputfile_offset_from_end = -1;
+  sf_count_t outputfile_offset = 0;
+  float *copy_array;
+  int num_frames = file_info->frames;
+
+  if ((copy_array = malloc(file_info->channels * sizeof(float))) == NULL) {
+    fprintf(stderr, "memory allocation failed\n");
+    return 0;
+  }
+
+  while (outputfile_offset <= num_frames) {
+    sf_seek(inputfile, inputfile_offset_from_end--, SEEK_END);
+    sf_read_float(inputfile, copy_array, 1);
+
+    sf_seek(outputfile, outputfile_offset++, SEEK_SET);
+    sf_write_float(outputfile, copy_array, 1);
+  }
+
+  free(copy_array);
+
+  return 1;
 }
 
 int main(int argc, char *argv[])
@@ -101,30 +129,15 @@ int main(int argc, char *argv[])
     goto error;
   }
 
-  // iterate backwards through inputfile, writing forwards into outputfile
-
-  sf_count_t inputfile_offset_from_end = -1;
-  sf_count_t outputfile_offset = 0;
-  float *copy_array;
-
-  if ((copy_array = malloc(inputfile_info.channels * sizeof(float))) == NULL) {
-    fprintf(stderr, "memory allocation failed\n");
+  if(!(copy_samples_in_reverse(inputfile, outputfile, &inputfile_info))) {
+    fprintf(stderr, "error copying samples\n");
     goto error;
-  }
-
-  while (outputfile_offset <= inputfile_info.frames) {
-    sf_seek(inputfile, inputfile_offset_from_end--, SEEK_END);
-    sf_read_float(inputfile, copy_array, 1);
-
-    sf_seek(outputfile, outputfile_offset++, SEEK_SET);
-    sf_write_float(outputfile, copy_array, 1);
   }
 
   // tidy up
 
   free(format_extension);
   free(reversed_filename);
-  free(copy_array);
   free(outputfile_info);
 
   sf_close(inputfile);
