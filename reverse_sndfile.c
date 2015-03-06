@@ -46,21 +46,23 @@ SF_INFO* create_output_file_info(const SF_INFO inputfile_info)
   return reversed_file_info;
 }
 
-int copy_samples_in_reverse(SNDFILE *inputfile, SNDFILE *outputfile, SF_INFO *file_info)
+int copy_section_in_reverse(SNDFILE *inputfile, SNDFILE *outputfile,
+                            const SF_INFO *file_info,
+                            const int start_frame, const int chunk_size)
 {
   // iterate backwards through inputfile, writing forwards into outputfile
 
-  sf_count_t inputfile_offset_from_end = -1;
-  sf_count_t outputfile_offset = 0;
+  sf_count_t inputfile_offset_from_end = -1 - start_frame;
+  sf_count_t outputfile_offset = start_frame;
+  sf_count_t end_frame = start_frame + chunk_size;
   float *copy_array;
-  int num_frames = file_info->frames;
 
   if ((copy_array = malloc(file_info->channels * sizeof(float))) == NULL) {
     fprintf(stderr, "memory allocation failed\n");
-    return 0;
+    return 1;
   }
 
-  while (outputfile_offset <= num_frames) {
+  while (outputfile_offset <= end_frame) {
     sf_seek(inputfile, inputfile_offset_from_end--, SEEK_END);
     sf_read_float(inputfile, copy_array, 1);
 
@@ -70,7 +72,23 @@ int copy_samples_in_reverse(SNDFILE *inputfile, SNDFILE *outputfile, SF_INFO *fi
 
   free(copy_array);
 
-  return 1;
+  return 0;
+}
+
+int copy_file_in_reverse(SNDFILE *inputfile, SNDFILE *outputfile,
+                         const SF_INFO *file_info)
+{
+  int chunk_size = (int)file_info->frames / num_procs;
+  int i = 0;
+  int response_code = 0;
+
+  for (; i < num_procs; i++) {
+    response_code += copy_section_in_reverse(inputfile, outputfile, file_info,
+                            chunk_size * i,
+                            chunk_size);
+  }
+
+  return response_code;
 }
 
 int main(int argc, char *argv[])
@@ -129,7 +147,7 @@ int main(int argc, char *argv[])
     goto error;
   }
 
-  if(!(copy_samples_in_reverse(inputfile, outputfile, &inputfile_info))) {
+  if ((copy_file_in_reverse(inputfile, outputfile, &inputfile_info))) {
     fprintf(stderr, "error copying samples\n");
     goto error;
   }
