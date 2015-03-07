@@ -7,4 +7,12 @@
 
 extern int num_procs = 2;
 
+typedef struct {
+  SNDFILE *inputfile;
+  SNDFILE *outputfile;
+  SF_INFO *file_info;
+  int start_frame;
+  int chunk_size;
+} CopySectionArgs;
+
 #endif
